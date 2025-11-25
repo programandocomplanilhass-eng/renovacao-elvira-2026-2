@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>Renovação 2026 — Escola Municipal Elvira de Freitas Oliveira</title>
+<style>
+  /* ========= THEME ========= */
+  :root{
+    /* Paleta da escola */
+    --bg:#f5f4f0;
+    --fg:#131414;
+    --muted:#8a8a8a;
+    --brand:#11884a;
+    --brand-2:#0e6f3d;
+    --accent:#246fa0;
+    --ok:#11884a;
+    --ok-2:#0e6f3d;
+    --warn:#dc2626;
+    --warn-2:#b91c1c;
+    --card:#ffffff;
+    --radius:14px; --radius-lg:18px;
+    --shadow:0 10px 28px rgba(0,0,0,.08);
+    --pad:16px; --pad-sm:12px; --safe-b:env(safe-area-inset-bottom,0px);
+    --line:#bcbcbc;
+    --line-2:#d6bd9d;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0b1020; --fg:#e5e7eb; --muted:#9aa3b2; --card:#0f162a; --line:#1f2a44; --line-2:#213153;
+      --shadow:0 10px 28px rgba(0,0,0,.35);
+    }
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    letter-spacing:.2px;
+  }
+
+  /* ========= LAYOUT ========= */
+  .wrap{width:100%;max-width:unset;margin:0;padding:clamp(8px,2.5vw,24px)}
+  .card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:clamp(12px,2vw,20px);border:1px solid var(--line)}
+
+  /* Header pegajoso com blur e gradiente suave */
+  .header{
+    position:sticky; top:0; z-index:5;
+    margin:calc(-1 * clamp(12px,2vw,20px)) calc(-1 * clamp(12px,2vw,20px)) var(--pad-sm);
+    padding:16px 20px; border-radius:18px 18px 0 0; border-bottom:1px solid var(--line);
+    background:linear-gradient(135deg, color-mix(in srgb, var(--brand) 92%, #fff 8%), color-mix(in srgb, var(--accent) 80%, #fff 20%));
+    color:#fff;
+    backdrop-filter:saturate(120%) blur(6px);
+  }
+  @media (prefers-color-scheme: dark){
+    .header{background:linear-gradient(180deg, rgba(13,19,39,.85), rgba(13,19,39,.7));}
+  }
+  .school-name{font-weight:800;font-size:clamp(16px,1.8vw,22px);line-height:1.25;text-align:center;color:#fff}
+  .sub{margin-top:6px;text-align:center;color:#fff;font-weight:700;opacity:.95;font-size:clamp(14px,1.6vw,18px)}
+  .deadline{margin-top:2px;text-align:center;color:rgba(255,255,255,.85);font-size:clamp(12px,1.4vw,16px)}
+
+  h1{font-size:clamp(20px,2.4vw,30px);margin:10px 0 6px}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(220px,32vw,360px),1fr));gap:clamp(10px,1.8vw,16px)}
+  @media(min-width:960px){.row{grid-template-columns:repeat(auto-fit,minmax(clamp(220px,24vw,420px),1fr))}}
+
+  /* ========= FORM ========= */
+  label{font-size:clamp(12px,1.3vw,15px);font-weight:700;margin:2px 0 6px 2px;display:block;color:#7e5757}
+  @media (prefers-color-scheme: dark){ label{color:#9fb1d5} }
+
+  input,select,textarea{width:100%;padding:clamp(12px,1.1vw,16px) clamp(12px,1.1vw,16px);border:1px solid var(--line);border-radius:12px;font-size:clamp(15px,1.3vw,17px);background:#fff;line-height:1.2;min-height:44px;outline:none;transition:box-shadow .18s ease, border-color .18s ease, transform .05s ease;caret-color:var(--brand)}
+  @media (prefers-color-scheme: dark){
+    input,select,textarea{background:#0b1326;border-color:#1f2a44;color:var(--fg)}
+  }
+  input[readonly]{background:#f3f4f6}
+  @media (prefers-color-scheme: dark){ input[readonly]{background:#0e1831} }
+
+  /* Estados de foco elegantes */
+  input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb, var(--brand) 70%, #fff 30%);box-shadow:0 0 0 4px color-mix(in srgb, var(--brand) 20%, transparent)}
+
+  /* Helpers e status */
+  .helper{font-size:clamp(11px,1.1vw,13px);color:var(--muted);margin-top:6px}
+  .status{margin-top:10px;font-size:clamp(13px,1.3vw,16px)}
+  .status.loading{opacity:.8}
+  .hide{display:none !important}
+
+  /* Chips, títulos de seção e divisores */
+  .tag{display:inline-flex;align-items:center;gap:8px;background:#d6bd9d;color:#131414;border-radius:999px;padding:5px 10px;font-size:clamp(11px,1.1vw,13px);font-weight:700;border:1px solid var(--line-2)}
+  @media (prefers-color-scheme: dark){ .tag{background:#112150;border-color:#1a2d67;color:#b9ccff} }
+
+  .section-title{margin:18px 0 6px;font-weight:800;letter-spacing:.2px;display:flex;align-items:center;gap:10px;font-size:clamp(14px,1.8vw,20px)}
+  .section-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+  hr{margin:18px 0;border:0;border-top:1px solid var(--line)}
+
+  /* Cartõezinhos internos */
+  .contact-item{
+    display:grid;grid-template-columns:1fr;gap:10px;background:linear-gradient(180deg,#fbfdff,#fff);
+    border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 2px 10px rgba(37,99,235,.06)
+  }
+  @media(min-width:960px){.contact-item{grid-template-columns:160px 1fr 1fr 120px}}
+  .med-item{display:grid;grid-template-columns:1fr 120px;gap:10px;background:linear-gradient(180deg,#f8fbff,#fff);border:1px dashed #c7d2fe;border-radius:12px;padding:12px}
+  .contact-actions{display:flex;gap:8px;align-items:center}
+
+  /* ========= AÇÕES / BOTÕES ========= */
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .actions > *{min-height:44px}
+  button{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-size:16px;cursor:pointer;font-weight:800;letter-spacing:.2px;transition:transform .06s ease, box-shadow .2s ease, background .2s ease}
+  .primary{background:linear-gradient(180deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 6px 16px rgba(17,136,74,.25)}
+  .primary:hover{transform:translateY(-1px)}
+  .ghost{background:#f5f4f0;color:var(--fg);border:1px solid var(--line)}
+  .ghost:hover{box-shadow:0 6px 14px rgba(59,130,246,.14)}
+  .ok{background:linear-gradient(180deg,var(--ok),var(--ok-2));color:#fff;box-shadow:0 6px 16px rgba(22,163,74,.22)}
+  .danger{background:linear-gradient(180deg,var(--warn),var(--warn-2));color:#fff;box-shadow:0 6px 16px rgba(220,38,38,.22)}
+  .primary:active,.ghost:active,.ok:active,.danger:active{transform:translateY(0)}
+
+  /* Barra fixa no mobile melhorada */
+  .sticky-actions{*/
+    position:sticky; bottom:0; left:0; right:0; z-index:10;
+    padding:12px 0 calc(12px + var(--safe-b));
+    background:linear-gradient(180deg, rgba(255,255,255,0) 0%, color-mix(in srgb, var(--card) 92%, transparent) 40%, var(--card) 100%);
+    border-top:1px solid var(--line);
+    margin:12px -6px -10px -6px;*/
+                   position: static !important;
+    padding: 12px 0;
+    background: transparent;
+    border-top: none;
+    margin: 20px 0 0 0;
+                  
+  }
+
+  /* Inputs mais "calmos" no iOS */
+  input, textarea{ -webkit-user-select:text; -webkit-touch-callout:default }
+  input::-webkit-contacts-auto-fill-button{visibility:hidden; display:none !important; pointer-events:none}
+
+  /* Ajustes responsivos finos */
+  @media(max-width:959px){
+    .actions > button{flex:1 1 100%}
+    .wrap{padding:12px}
+    .card{padding:12px}
+  }
+
+  /* ======== MENSAGEM DE AGRADECIMENTO ======== */
+  .thanks-box{
+    margin-top:16px;
+    padding:18px 16px;
+    border-radius:16px;
+    text-align:center;
+    font-weight:600;
+    line-height:1.5;
+    background:linear-gradient(135deg, rgba(17,136,74,0.08), rgba(36,111,160,0.08));
+    border:1px solid var(--line-2);
+  }
+  .thanks-box h2{
+    margin:0 0 8px;
+    font-size:clamp(18px,2.2vw,24px);
+    color:var(--brand-2);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="header">
+        <div class="school-name">Escola Municipal Elvira de Freitas Oliveira</div>
+        <div class="sub">Renovação 2026</div>
+        <div class="deadline"></div>
+      </div>
+
+      <h1>Localizar cadastro</h1>
+      <div class="row" id="blocoBusca">
+        <div>
+          <label for="cpf">CPF para localizar cadastro</label>
+          <input id="cpf" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14" enterkeyhint="search">
+          <div class="helper">Digite o CPF e toque em <b>Buscar</b></div>
+          <div class="actions">
+            <button id="btnBuscar" class="primary">Buscar</button>
+            <button id="btnLimpar" class="ghost" type="button">Limpar</button>
+          </div>
+          <div id="status" class="status"></div>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- MENSAGEM DE AGRADECIMENTO (MOSTRA APÓS ENVIAR) -->
+      <div id="thanksMessage" class="thanks-box hide">
+        <h2>✅ Renovação de <span id="thanksAlunoLabel"></span> enviada com sucesso!</h2>
+        <p>
+          Agradecemos por realizar a renovação de matrícula.<br>
+        </p>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px;">
+          Em caso de dúvidas, entre em contato com o secretário Matheus pelo WhatsApp (31)3459-1849.
+        </p>
+      </div>
+
+      <div id="blocoDados" class="hide">
+        <div style="margin-bottom:6px"><span class="tag" id="tagEncontrados">0 resultados</span></div>
+
+        <!-- 1) DADOS DO ALUNO -->
+        <div class="section-title">Dados do aluno</div>
+        <div class="row">
+          <div>
+            <label for="aluno">Nome do aluno</label>
+            <input id="aluno" type="text" readonly placeholder="Nome completo" autocomplete="name">
+          </div>
+          <div>
+            <label for="turma">Turma em 2025</label>
+            <input id="turma" type="text" readonly placeholder="Ex.: VERDE LIMA" autocomplete="off">
+          </div>
+           <div>
+            <label for="turma2026">Turma em 2026</label>
+            <input id="turma2026" type="text" readonly placeholder="Ex.: 2° ANO DULCI" autocomplete="off">
+          </div>
+        </div>
+
+        <!-- 2) ENDEREÇO -->
+        <div class="section-title">Endereço</div>
+        <div class="row">
+          <div>
+            <label for="cep">CEP</label>
+            <input id="cep" type="text" inputmode="numeric" placeholder="00000-000" maxlength="9" autocomplete="postal-code">
+            <div class="helper" id="cepHelp">Digite o CEP — o ViaCEP preenche o restante.</div>
+          </div>
+          <div>
+            <label for="logradouro">Logradouro</label>
+            <input id="logradouro" type="text" readonly placeholder="Rua / Avenida" autocomplete="address-line1">
+          </div>
+          <div>
+            <label for="numero">Número (editável)</label>
+            <input id="numero" type="text" inputmode="numeric" placeholder="123" autocomplete="address-line2">
+          </div>
+          <div>
+            <label for="complemento">Complemento (editável)</label>
+            <input id="complemento" type="text" placeholder="Bloco, apto., casa" autocomplete="address-line2">
+          </div>
+          <div>
+            <label for="bairro">Bairro</label>
+            <input id="bairro" type="text" readonly placeholder="Bairro" autocomplete="address-level3">
+          </div>
+          <div>
+            <label for="cidade">Cidade</label>
+            <input id="cidade" type="text" readonly placeholder="Cidade" autocomplete="address-level2">
+          </div>
+          <div>
+            <label for="uf">UF</label>
+            <input id="uf" type="text" readonly placeholder="MG" autocomplete="address-level1">
+          </div>
+        </div>
+
+        <!-- 3) RESPONSÁVEL -->
+        <div class="section-title">Responsável pela renovação</div>
+        <div class="row">
+          <div>
+            <label for="respNome">Nome do responsável</label>
+            <input id="respNome" type="text" placeholder="Nome completo" autocomplete="name">
+          </div>
+          <div>
+            <label for="respCpf">CPF do responsável</label>
+            <input id="respCpf" type="text" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
+          </div>
+          <div>
+            <label for="respContato">Contato principal (telefone)</label>
+            <input id="respContato" type="tel" inputmode="tel" placeholder="(31) 9xxxxxxxx" autocomplete="tel-national">
+          </div>
+          <div>
+            <label for="respTemEmail">Tem e-mail?</label>
+            <select id="respTemEmail">
+              <option value="nao">Não</option>
+              <option value="sim">Sim</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1">
+            <label for="respEmail">E-mail do responsável</label>
+            <input id="respEmail" type="email" placeholder="exemplo@dominio.com" disabled autocapitalize="none" autocomplete="email" inputmode="email">
+          </div>
+        </div>
+
+        <!-- 4) CONTATOS ADICIONAIS -->
+        <div class="section-title">Contatos adicionais</div>
+        <div id="contactsList" class="grid-1" style="margin-bottom:8px"></div>
+        <div class="actions">
+          <button id="btnAddContact" type="button" class="ghost">+ Adicionar contato</button>
+        </div>
+        <div class="helper">Somente números (DDD + número). Tipos: Telefone ou WhatsApp.</div>
+
+        <!-- 5) BENEFÍCIOS SOCIAIS -->
+        <div class="section-title">Benefícios sociais</div>
+        <div class="row">
+          <div>
+            <label for="bolsaFamilia">Recebe Bolsa Família?</label>
+            <select id="bolsaFamilia">
+              <option value="nao">Não</option>
+              <option value="sim">Sim</option>
+            </select>
+          </div>
+          <div>
+            <label for="nis">NIS (11 dígitos)</label>
+            <input id="nis" type="text" inputmode="numeric" maxlength="11" placeholder="Somente números" disabled autocomplete="off">
+            <div class="helper">Obrigatório somente se “Sim”.</div>
+          </div>
+        </div>
+         <!-- 5) cor/raça -->
+        <div class="section-title">Cor/ raça que você declara da sua criança:</div>
+        <div class="row">
+          <div>
+            <label for="corRaca"></label>
+            <select id="corRaca">
+              <option value="Parda">Parda</option>
+              <option value="Branca">Branca</option>
+              <option value="Preta">Preta</option>
+              <option value="Amarela">Amarela</option>
+              <option value="Indigena">Indigena</option>
+            </select>
+          </div>
+        
+        </div>
+
+
+        
+        <!-- 7) SAÚDE -->
+        <div class="section-title">Saúde</div>
+        <div class="row">
+          <!-- 1. Laudo médico -->
+          <div>
+            <label for="temLaudo">Aluno com deficiência?</label>
+            <select id="temLaudo">
+              <option value="nao">Não</option>
+              <option value="sim">Sim</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1">
+            <label for="laudoDesc">Qual? (se houver)</label>
+            <textarea id="laudoDesc" rows="2" placeholder="Ex.: TDAH, TEA, dislexia..." disabled></textarea>
+          </div>
+
+        
+          <!-- 3. Alergias -->
+          <div>
+            <label for="temAlergia">Problema de saúde?</label>
+            <select id="temAlergia">
+              <option value="nao">Não</option>
+              <option value="sim">Sim</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1">
+            <label for="alergiaDesc">Qual? (se houver)</label>
+            <textarea id="alergiaDesc" rows="2" placeholder="Ex.: alergia a penicilina, picada de inseto, etc." disabled></textarea>
+          </div>
+
+      
+
+          
+
+      
+
+        <!-- BARRA FIXA DE AÇÕES NO MOBILE -->
+        <div class="sticky-actions">
+          <div class="actions">
+            <button id="btnEnviar" class="ok">Enviar renovação</button>
+            <button id="btnCancelar" class="danger" type="button">Cancelar</button>
+          </div>
+          <div id="statusEnvio" class="status"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Área oculta usada para montar o PDF -->
+  <div id="pdfArea" style="position:fixed;left:-9999px;top:-9999px">
+    <div id="pdfConfirm" style="
+      font-family:system-ui,Arial,sans-serif;
+      color:#111;
+      background:#fff;
+      padding:24px;
+      max-width:700px;
+      margin:auto;
+      line-height:1.6;
+      border-radius:12px;
+      box-shadow:0 0 0 1px #ddd;
+    ">
+      <!-- Conteúdo será injetado via JS -->
+    </div>
+  </div>
+
+  <!-- Modal de visualização do comprovante -->
+  <div id="pdfModal" class="hide" style="
+    position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);
+    display:flex;align-items:center;justify-content:center;z-index:100;
+  ">
+    <div style="
+      background:#fff;border-radius:16px;max-width:800px;width:90%;max-height:90%;
+      overflow:auto;padding:24px;position:relative;
+      box-shadow:0 10px 40px rgba(0,0,0,.2);font-family:system-ui,Arial,sans-serif;color:#111;
+    ">
+      <button id="closeModal" style="
+  position:absolute;top:10px;right:10px;border:0;background:#dc2626;color:#fff;
+  padding:6px 12px;border-radius:8px;cursor:pointer;
+">✖ Fechar</button>
+      <div id="pdfPreview" style="padding:12px;"></div>
+      <div style="margin-top:20px;text-align:right;">
+        
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById("closeModal").addEventListener("click", () => {
+      document.getElementById("pdfModal").classList.add("hide");
+    });
+  </script>
+
+  <!-- libs para gerar o PDF no cliente -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <script>
+    // ====== CONFIG ======
+    //carregar dados da minha planilha
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbyrD9u1Zkff4R_eJB_qM2PUL8TbuB88FwXh_KisIhnoxgAhkSsLmPLM4Zwr4zAqL4aS/exec";
+    // guardar dados na outra planilha
+    const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzWaov6dK0viQ1JIKKViUfOErOvymX9XIq_Hl5oCGGrkM4XR77hsL0YvL9RbnGAlB-x/exec";
+    const MAP = {
+      CPF:["CPF","Cpf","cpf","DOCUMENTO","Documento","doc"],
+      ALUNO:["ALUNO","Aluno","NOME","Nome do aluno","NOME DO ALUNO"],
+      TURMA:["TURMA","Turma"],
+      TURMA2026:["TURMA2026","Turma2026"],
+      TEL1:["TELEFONE","TELEFONE 1","Telefone","FONE","Contato 1"],
+      TEL2:["TELEFONE 2","Contato 2","Telefone2"]
+    };
+
+    const $ = s => document.querySelector(s);
+    const onlyDigits = s => (s||"").toString().replace(/\D/g,"");
+    const maskCPF = s => {
+      const d = onlyDigits(s).slice(0,11);
+      return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2}).*$/, (m,a,b,c,dv)=> dv?`${a}.${b}.${c}-${dv}`: (c?`${a}.${b}.${c}`:(b?`${a}.${b}`:a)));
+    };
+    const maskCEP = s => {
+      const d = onlyDigits(s).slice(0,8);
+      return d.length>5 ? d.slice(0,5)+"-"+d.slice(5) : d;
+    };
+    const fmtTel = v => {
+      const d=onlyDigits(v||'');
+      if(d.length<=10) return d.replace(/^(\d{2})(\d{4})(\d{0,4}).*$/, (m,a,b,c)=> c?`(${a}) ${b}-${c}`:`(${a}) ${b}`);
+      return d.replace(/^(\d{2})(\d{5})(\d{0,4}).*$/, (m,a,b,c)=> c?`(${a}) ${b}-${c}`:`(${a}) ${b}`);
+    };
+
+    let cache=null, record=null;
+    let contacts=[]; let meds=[];
+
+    const cpfInput=$("#cpf"), btnBuscar=$("#btnBuscar"), btnLimpar=$("#btnLimpar");
+    const status=$("#status"), bloco=$("#blocoDados"), tagEncontrados=$("#tagEncontrados");
+    const btnCancelar=$("#btnCancelar"), btnEnviar=$("#btnEnviar"), statusEnvio=$("#statusEnvio");
+    const contactsList=$("#contactsList"), btnAddContact=$("#btnAddContact");
+    const medWrap=$("#medicWrap"), medList=$("#medList"), btnAddMed=$("#btnAddMed");
+    const pdfArea=$("#pdfArea"), pdfConfirm=$("#pdfConfirm");
+    const blocoBusca=$("#blocoBusca"), thanksMsg=$("#thanksMessage");
+
+    const f={
+      aluno:$("#aluno"), turma:$("#turma"),turma2026:$("#turma2026"),
+      cep:$("#cep"), logradouro:$("#logradouro"), numero:$("#numero"),
+      complemento:$("#complemento"), bairro:$("#bairro"), cidade:$("#cidade"), uf:$("#uf"),
+      respNome:$("#respNome"), respCpf:$("#respCpf"), respContato:$("#respContato"),
+      respTemEmail:$("#respTemEmail"), respEmail:$("#respEmail"),
+      bolsaFamilia:$("#bolsaFamilia"), nis:$("#nis"),
+      corRaca:$("#corRaca"),
+      
+      temAlergia:$("#temAlergia"), alergiaDesc:$("#alergiaDesc"),
+     
+  
+      temLaudo:$("#temLaudo"), laudoDesc:$("#laudoDesc"),
+
+      
+    };
+
+    // Acessibilidade Mobile: scroll to input
+    ['input','select','textarea'].forEach(tag=>{
+      document.addEventListener('focusin', ev=>{
+        if(ev.target.matches(tag)){
+          setTimeout(()=>{ ev.target.scrollIntoView({block:'center', behavior:'smooth'}); }, 100);
+        }
+      });
+    });
+
+    // Máscaras e interações
+    cpfInput.addEventListener("input",()=>{
+      cpfInput.value=maskCPF(cpfInput.value);
+      if(onlyDigits(cpfInput.value).length===11) doBuscar();
+    });
+    f.respCpf.addEventListener("input",()=> f.respCpf.value=maskCPF(f.respCpf.value));
+    f.respTemEmail.addEventListener("change",()=>{
+      const en=f.respTemEmail.value==="sim";
+      f.respEmail.disabled=!en;
+      if(!en) f.respEmail.value="";
+    });
+    f.cep.addEventListener("input",()=>{
+      f.cep.value=maskCEP(f.cep.value);
+      const d=onlyDigits(f.cep.value);
+      if(d.length===8) lookupViaCEP(d);
+    });
+    f.bolsaFamilia.addEventListener("change",()=>{
+      const sim=f.bolsaFamilia.value==="sim";
+      f.nis.disabled=!sim;
+      if(!sim) f.nis.value="";
+    });
+    f.nis.addEventListener("input",()=>{
+      f.nis.value = onlyDigits(f.nis.value).slice(0,11);
+    });
+    
+    f.temLaudo.addEventListener("change",()=>{
+      const en=f.temLaudo.value==="sim";
+      f.laudoDesc.disabled=!en;
+      if(!en) f.laudoDesc.value="";
+    });
+    
+    f.temAlergia.addEventListener("change",()=>{
+      const en=f.temAlergia.value==="sim";
+      f.alergiaDesc.disabled=!en;
+      if(!en) f.alergiaDesc.value="";
+    });
+    
+   
+    // Contatos adicionais
+    btnAddContact.addEventListener("click",()=> addContact({tipo:"Telefone", valor:"", obs:""}));
+    function addContact(c){ contacts.push(c); renderContacts(); }
+    function removeContact(i){ contacts.splice(i,1); renderContacts(); }
+    function enforceDigits(el){ const v=onlyDigits(el.value); if(el.value!==v) el.value=v; }
+    function renderContacts(){
+      contactsList.innerHTML="";
+      contacts.forEach((c,i)=>{
+        const div=document.createElement("div");
+        div.className="contact-item";
+        div.innerHTML=`
+          <div><label>Tipo</label>
+            <select data-k="tipo" data-i="${i}">
+              <option ${c.tipo==="Telefone"?"selected":""}>Telefone</option>
+              <option ${c.tipo==="WhatsApp"?"selected":""}>WhatsApp</option>
+            </select>
+          </div>
+          <div><label>Valor (apenas números)</label>
+            <input data-k="valor" data-i="${i}" type="text" inputmode="numeric" maxlength="15" placeholder="DDD + número" value="${c.valor||""}">
+          </div>
+          <div><label>Observação</label>
+            <input data-k="obs" data-i="${i}" type="text" placeholder="Ex.: mãe, pai, tio, horário" value="${c.obs||""}">
+          </div>
+          <div class="contact-actions">
+            <button type="button" class="danger" data-act="rm" data-i="${i}">Remover</button>
+          </div>`;
+        contactsList.appendChild(div);
+      });
+      contactsList.querySelectorAll("select").forEach(el=>{
+        el.addEventListener("input", ev=>{
+          const idx=+ev.target.dataset.i;
+          contacts[idx].tipo=ev.target.value;
+        });
+      });
+      contactsList.querySelectorAll("input[data-k='valor']").forEach(el=>{
+        el.addEventListener("input", ev=>{
+          const idx=+ev.target.dataset.i;
+          enforceDigits(ev.target);
+          contacts[idx].valor=ev.target.value;
+        });
+      });
+      contactsList.querySelectorAll("input[data-k='obs']").forEach(el=>{
+        el.addEventListener("input", ev=>{
+          const idx=+ev.target.dataset.i;
+          contacts[idx].obs=ev.target.value;
+        });
+      });
+      contactsList.querySelectorAll("[data-act='rm']").forEach(btn=>{
+        btn.addEventListener("click", ev=>{
+          const idx=+ev.target.dataset.i;
+          removeContact(idx);
+        });
+      });
+    }
+
+    // Medicamentos
+ /*   btnAddMed.addEventListener("click",()=> addMed(""));
+    function addMed(name){ meds.push(name); renderMeds(); }
+    function removeMed(i){ meds.splice(i,1); renderMeds(); }
+    function renderMeds(){
+      medList.innerHTML="";
+      meds.forEach((name,i)=>{
+        const div=document.createElement("div");
+        div.className="med-item";
+        div.innerHTML=`
+          <div>
+            <label>Nome do medicamento</label>
+            <input data-i="${i}" type="text" placeholder="Ex.: Dipirona" value="${name||""}">
+          </div>
+          <div class="contact-actions" style="align-self:end">
+            <button type="button" class="danger" data-act="rmmed" data-i="${i}">Remover</button>
+          </div>`;
+        medList.appendChild(div);
+      });
+      medList.querySelectorAll("input").forEach(el=>{
+        el.addEventListener("input", ev=>{
+          const idx=+ev.target.dataset.i;
+          meds[idx]=ev.target.value;
+        });
+      });
+      medList.querySelectorAll("[data-act='rmmed']").forEach(btn=>{
+        btn.addEventListener("click", ev=>{
+          const idx=+ev.target.dataset.i;
+          removeMed(idx);
+        });
+      });
+    }*/
+
+    async function lookupViaCEP(cepDigits){
+      const help=document.querySelector("#cepHelp");
+      help.textContent="Consultando ViaCEP...";
+      try{
+        const resp=await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`);
+        if(!resp.ok) throw new Error("ViaCEP indisponível.");
+        const data=await resp.json();
+        if(data.erro){ help.textContent="CEP não encontrado."; return; }
+        document.querySelector("#logradouro").value=data.logradouro||"";
+        document.querySelector("#bairro").value=data.bairro||"";
+        document.querySelector("#cidade").value=data.localidade||"";
+        document.querySelector("#uf").value=(data.uf||"");
+        if(!document.querySelector("#complemento").value && data.complemento) document.querySelector("#complemento").value=data.complemento;
+        help.textContent="Endereço preenchido. Edite apenas número e complemento.";
+        document.querySelector("#numero").focus();
+      } catch(e){ help.textContent="Erro ao consultar ViaCEP."; console.error(e); }
+    }
+
+    async function getData(){
+      if(cache) return cache;
+      const resp=await fetch(ENDPOINT,{cache:"no-store"});
+      if(!resp.ok) throw new Error("Falha ao acessar a API: "+resp.status);
+      const json=await resp.json();
+      let arr=[];
+      if(Array.isArray(json?.data)) arr=json.data;
+      else if(Array.isArray(json?.rows)) arr=json.rows;
+      else if(Array.isArray(json)) arr=json;
+      else {
+        for(const k of Object.keys(json||{})) if(Array.isArray(json[k])){ arr=json[k]; break; }
+      }
+      if(!Array.isArray(arr)) throw new Error("Formato inesperado de dados.");
+      cache=arr; return arr;
+    }
+
+    function pickField(obj, keys){
+      for(const k of Object.keys(obj)){
+        for(const a of keys){
+          if(k.trim().toLowerCase()===a.trim().toLowerCase()) return obj[k];
+        }
+      }
+      return null;
+    }
+
+    async function doBuscar(){
+      const digits=onlyDigits(cpfInput.value);
+      if(digits.length<8){ status.textContent="Digite ao menos 8 dígitos do CPF (ideal: 11)."; bloco.classList.add("hide"); return; }
+      status.textContent="Buscando..."; status.classList.add("loading"); bloco.classList.add("hide"); statusEnvio.textContent="";
+      try{
+        const arr=await getData();
+        const hits=arr.filter(row=>{
+          const v=pickField(row,MAP.CPF) ?? Object.values(row).find(x=>onlyDigits(String(x))===digits);
+          return v && onlyDigits(String(v))===digits;
+        });
+        if(hits.length===0){ status.textContent="CPF não encontrado."; return; }
+        record=hits[0];
+        tagEncontrados.textContent=hits.length===1?"1 resultado":`${hits.length} resultados (mostrando o 1º)`;
+        preencherFormulario(record);
+        bloco.classList.remove("hide");
+        status.textContent="Dados carregados. Revise e complete.";
+        bloco.scrollIntoView({block:'start', behavior:'smooth'});
+      } catch(e){ console.error(e); status.textContent="Erro: "+e.message; }
+      finally{ status.classList.remove("loading"); }
+    }
+// AQUI VAI SER O AUTOCOLPLETE
+    function preencherFormulario(row){
+      const v=keys=>pickField(row, keys);
+      document.querySelector("#aluno").value=v(MAP.ALUNO) ?? "";
+      document.querySelector("#turma").value=v(MAP.TURMA) ?? "";
+      document.querySelector("#turma2026").value=v(MAP.TURMA2026) ?? "";
+
+      contacts=[];
+      const tel1=(v(MAP.TEL1) ?? "").toString(), tel2=(v(MAP.TEL2) ?? "").toString();
+      const push=(s)=>{
+        const parts=s.includes("/")?s.split("/"):[s];
+        parts.map(p=>onlyDigits(p)).filter(Boolean).forEach(d=>contacts.push({tipo:"Telefone",valor:d,obs:""}));
+      };
+      if(tel1) push(tel1);
+      if(tel2) push(tel2);
+      renderContacts();
+
+      f.bolsaFamilia.value="nao"; f.nis.value=""; f.nis.disabled=true;
+      
+      f.temAlergia.value="nao"; f.alergiaDesc.value=""; f.alergiaDesc.disabled=true;
+  
+      
+    }
+
+    btnBuscar.addEventListener("click", doBuscar);
+    btnLimpar.addEventListener("click", ()=>{
+      cpfInput.value=""; status.textContent=""; bloco.classList.add("hide"); record=null;
+      contacts=[]; meds=[]; renderContacts(); renderMeds();
+      f.bolsaFamilia.value="nao"; f.nis.value=""; f.nis.disabled=true;
+     
+    });
+    btnCancelar.addEventListener("click", ()=>{
+      bloco.classList.add("hide"); statusEnvio.textContent=""; record=null;
+      contacts=[]; meds=[]; renderContacts(); renderMeds();
+      f.bolsaFamilia.value="nao"; f.nis.value=""; f.nis.disabled=true;
+     
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    btnEnviar.addEventListener("click", async ()=>{
+      statusEnvio.textContent="";
+      const obrigatorios = [
+        [f.respNome, "Nome do responsável"],
+        [f.respCpf, "CPF do responsável"],
+        [f.respContato, "Contato principal"]
+      ];
+      for(const [campo,nome] of obrigatorios){
+        if(!campo.value.trim()){
+          campo.focus();
+          statusEnvio.textContent="⚠️ Preencha o campo obrigatório: "+nome;
+          statusEnvio.style.color="red";
+          return;
+        }
+      }
+      const conds = [
+        [f.temLaudo, f.laudoDesc, "Descreva o laudo médico"],
+        [f.temAlergia, f.alergiaDesc, "Descreva os problemas de saúde"],
+      
+      ];
+      for(const [select, desc, msg] of conds){
+        if(select && desc && select.value==="sim" && !desc.value.trim()){
+          desc.focus();
+          statusEnvio.textContent="⚠️ "+msg+".";
+          statusEnvio.style.color="red";
+          return;
+        }
+      }
+
+      statusEnvio.style.color="green";
+      statusEnvio.textContent="✅ Renovação enviada com sucesso! Exibindo comprovante...";
+      // 🔒 Marca que este CPF já enviou
+      localStorage.setItem("renovacaoFeita_" + onlyDigits(cpfInput.value), "true");
+
+      // 🔐 Bloqueia o formulário
+      cpfInput.disabled = true;
+      btnBuscar.disabled = true;
+      btnEnviar.disabled = true;
+      btnAddContact.disabled = true;
+    
+      statusEnvio.innerHTML += "<br><b>Este CPF não poderá enviar novamente.</b>";
+
+      const payload = {
+        cpf_consulta: onlyDigits(cpfInput.value),
+        aluno: document.querySelector("#aluno").value.trim(),
+        turma: document.querySelector("#turma").value.trim(),
+        endereco: {
+          cep: onlyDigits(document.querySelector("#cep").value),
+          logradouro: document.querySelector("#logradouro").value.trim(),
+          numero: document.querySelector("#numero").value.trim(),
+          complemento: document.querySelector("#complemento").value.trim(),
+          bairro: document.querySelector("#bairro").value.trim(),
+          cidade: document.querySelector("#cidade").value.trim(),
+          uf: document.querySelector("#uf").value.trim().toUpperCase()
+        },
+        responsavel_renovacao: {
+          nome: document.querySelector("#respNome").value.trim(),
+          cpf: onlyDigits(document.querySelector("#respCpf").value),
+          contato_principal: document.querySelector("#respContato").value.trim(),
+          cor_raca:document.querySelector('#corRaca').value.trim(),
+          tem_email: document.querySelector("#respTemEmail").value==="sim",
+          email: document.querySelector("#respTemEmail").value==="sim" 
+                ? document.querySelector("#respEmail").value.trim() : ""
+        },
+        contatos_adicionais: contacts.map(c=>({
+          tipo:c.tipo.trim(), valor:onlyDigits(c.valor), obs:c.obs.trim()
+        })).filter(c=>c.valor),
+        beneficios:{
+          bolsa_familia:{
+            recebe: document.querySelector("#bolsaFamilia").value==="sim",
+            nis: document.querySelector("#bolsaFamilia").value==="sim" 
+                 ? onlyDigits(document.querySelector("#nis").value) : ""
+          }
+        },
+       
+        saude:{
+          laudo:{
+            tem: f.temLaudo.value==="sim",
+            descricao: f.temLaudo.value==="sim" ? f.laudoDesc.value.trim() : ""
+          },
+          
+          alergias:{
+            tem: f.temAlergia.value==="sim",
+            descricao: f.temAlergia.value==="sim" ? f.alergiaDesc.value.trim() : ""
+          },
+          
+          
+        },
+       
+        timestamp: new Date().toISOString()
+      };
+
+      try{
+        statusEnvio.textContent="Enviando...";
+        const r = await fetch(SUBMIT_URL, {
+          method:"POST",
+          headers:{ "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8" },
+          body:new URLSearchParams({ payload: JSON.stringify(payload) }).toString()
+        });
+        console.log(r);
+        const ok = r.ok;
+        const data = await r.json().catch(()=>({}));
+        if(!ok || data.ok===false) throw new Error(data.error || `Falha no envio: ${r.status}`);
+       /* statusEnvio.textContent="Renovação registrada com sucesso.";*/
+       statusEnvio.textContent = `Renovação de ${payload.aluno || "aluno(a)"} registrada com sucesso.`;
+
+
+        /*await gerarPDFConfirmacao(payload);
+
+        // 👉 Após tudo dar certo, some o formulário e mostra a mensagem de agradecimento
+        if(blocoBusca) blocoBusca.classList.add("hide");
+        if(bloco) bloco.classList.add("hide");
+        if(thanksMsg) thanksMsg.classList.remove("hide");
+        status.textContent = "";
+        window.scrollTo({top:0, behavior:"smooth"});*/
+        await gerarPDFConfirmacao(payload);
+
+// 👉 Preenche o nome do aluno na mensagem de agradecimento
+const thanksAlunoLabel = document.querySelector("#thanksAlunoLabel");
+if (thanksAlunoLabel) {
+  thanksAlunoLabel.textContent = payload.aluno || "aluno(a)";
+}
+
+// 👉 Após tudo dar certo, some o formulário e mostra a mensagem de agradecimento
+if (blocoBusca) blocoBusca.classList.add("hide");
+if (bloco) bloco.classList.add("hide");
+if (thanksMsg) thanksMsg.classList.remove("hide");
+status.textContent = "";
+window.scrollTo({ top: 0, behavior: "smooth" });
+
+
+      } catch(e){
+        console.error(e);
+        statusEnvio.textContent="Erro no envio: "+e.message;
+      }
+    });
+
+    function montarHTMLConfirmacao(p){
+      const contatos = (p.contatos_adicionais||[]).map(c=>`${c.tipo}: ${fmtTel(c.valor)}${c.obs? ' — '+c.obs:''}`).join('<br>') || '—';
+      const medsList = (p.saude?.medicamentos?.lista||[]).filter(Boolean).join(', ') || '—';
+      const temNao = v=> v ? 'Sim' : 'Não';
+
+      const now = new Date();
+      const quando = now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR');
+
+      return `
+      <div style="font-family:system-ui,Arial,sans-serif;color:#111;background:#fff;padding:24px;max-width:700px;margin:auto;line-height:1.6;border-radius:12px;box-shadow:0 0 0 1px #ddd">
+        <h2 style="text-align:center;color:var(--brand);margin:0 0 6px;font-size:22px">✅ Comprovante de Renovação 2026</h2>
+        <div style="text-align:center;font-weight:600;color:#444;font-size:15px;margin-bottom:16px">
+         Escola Municipal Elvira de Freitas Oliveira
+
+        </div>
+
+        <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0">
+
+        <div style="margin-bottom:12px">
+          <div><strong>Aluno:</strong> ${escapeHtml(p.aluno||'')}</div>
+          <div><strong>Turma:</strong> ${escapeHtml(p.turma||'')}</div>
+          <div><strong>Responsável:</strong> ${escapeHtml(p.responsavel_renovacao?.nome||'')}</div>
+          <div><strong>Contato:</strong> ${escapeHtml(p.responsavel_renovacao?.contato_principal||'')}</div>
+        </div>
+
+        <hr style="border:0;border-top:1px solid #e5e7eb;margin:16px 0">
+
+        <div style="font-weight:700;color:var(--brand);margin-bottom:6px">Informações de Saúde</div>
+        <ul style="list-style:none;padding-left:0;margin:0;font-weight:500;color:#333">
+          <li><strong>Laudo médico:</strong> ${p.saude?.laudo?.tem? escapeHtml(p.saude.laudo.descricao) : 'Não'}</li>
+          <li><strong>Acompanhamento psicológico:</strong> ${p.saude?.psicologico?.tem? escapeHtml(p.saude.psicologico.descricao) : 'Não'}</li>
+          <li><strong>Alergias:</strong> ${p.saude?.alergias?.tem? escapeHtml(p.saude.alergias.descricao) : 'Não'}</li>
+          <li><strong>Intolerências:</strong> ${p.saude?.intolerancia_alimentar?.tem? escapeHtml(p.saude.intolerancia_alimentar.descricao) : 'Não'}</li>
+          <li><strong>Medicamentos:</strong> ${p.saude?.medicamentos?.usa? escapeHtml(medsList) : 'Não'}</li>
+        </ul>
+
+        <div style="margin-top:24px;text-align:right;color:#777;font-size:13px">
+          Emitido em: ${quando}
+        </div>
+      </div>`;
+    }
+
+    function escapeHtml(s){
+      return (s||'').toString()
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    async function gerarPDFConfirmacao(payload){
+      const html = montarHTMLConfirmacao(payload);
+      pdfConfirm.innerHTML = html;
+     /* const preview = document.getElementById("pdfPreview");
+      preview.innerHTML = html;
+      document.getElementById("pdfModal").classList.remove("hide");*/
+
+      const node = pdfConfirm;
+      const canvas = await html2canvas(node, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const margin = 12;
+      const imgW = pageW - margin*2;
+      const imgH = canvas.height * imgW / canvas.width;
+
+      if(imgH <= pdf.internal.pageSize.getHeight() - margin*2){
+        pdf.addImage(imgData, 'PNG', margin, margin, imgW, imgH, undefined, 'FAST');
+      } else {
+        let remaining = imgH;
+        const pageH = pdf.internal.pageSize.getHeight();
+        const sliceCanvas = document.createElement('canvas');
+        const sliceCtx = sliceCanvas.getContext('2d');
+        const ratio = imgW / canvas.width;
+        const sliceHeightPx = Math.floor((pageH - margin*2) / ratio);
+        let offsetY = 0;
+        while(remaining > 0){
+          const hPx = Math.min(sliceHeightPx, canvas.height - offsetY);
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = hPx;
+          sliceCtx.drawImage(canvas, 0, offsetY, canvas.width, hPx, 0, 0, canvas.width, hPx);
+          const partImg = sliceCanvas.toDataURL('image/png');
+          pdf.addImage(partImg, 'PNG', margin, margin, imgW, hPx * ratio, undefined, 'FAST');
+          remaining -= hPx * ratio;
+          offsetY += hPx;
+          if(remaining > 0) pdf.addPage();
+        }
+      }
+
+      const alunoSafe = (payload.aluno||'Aluno').replace(/[^\p{L}\p{N}\s_-]+/gu,'').trim().replace(/\s+/g,'_');
+      const now = new Date();
+      const pad = n=>String(n).padStart(2,'0');
+      const stamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+      const filename = `Renovacao-${alunoSafe}-${stamp}.pdf`;
+      pdf.save(filename);
+    }
+  </script>
+</body>
+</html>
+
+
+
